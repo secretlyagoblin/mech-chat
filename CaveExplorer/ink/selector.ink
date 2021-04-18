@@ -59,7 +59,12 @@ VAR type = types.mechs
 <>{shuffle:
     - rumours # rumors
     - word from an informant #word
-} of {faction} {type} <>{shuffle:
+}<> of <>{shuffle:
+    -Frogtide # frog
+    -Deepburrow #deep
+    -Crowbrigade #crow
+    -Doormouse #mouse
+} <>{type} <>{shuffle:
     -in
     -around
     -sending scouts into #scouts
