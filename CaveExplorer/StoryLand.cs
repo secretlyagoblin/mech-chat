@@ -39,21 +39,30 @@ namespace CaveExplorer
             }
         }
 
-        public bool ShowChoices(out List<Choice> choices)
+        public bool ShowChoices(out List<Choice> choices, out List<string> tags)
         {
-            choices = new List<Choice>();
+            //choices = new List<Choice>();
+            //tags = new List<string>();
+
+            tags = _story.currentTags;
 
             if (_story.currentChoices.Count > 0)
             {
+                choices = new List<Choice>();
+
                 for (int i = 0; i < _story.currentChoices.Count; ++i)
                 {
-                    Choice choice = _story.currentChoices[i];
+                    Choice choice = _story.currentChoices[i];                   
 
                     choices.Add(choice);                    
                 }
 
+                
+
                 return true;
             }
+
+            choices = new List<Choice>(0);
 
             return false;
         } 

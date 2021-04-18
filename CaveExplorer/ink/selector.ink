@@ -20,12 +20,20 @@ VAR alwaysFalse = false
 
 When the time is right, your handler reaches out with news...
 
- * [{~First|Firstly|Most urgently|As you expected|Unexpectedly}, {GenerateMission()}]
- * [{~Second|Secondly|Also|As well as}, {GenerateMission()}]
- * {missionCount>2}[{missionCount == 3: Finally}{missionCount == 4:{~Third|Thirdly|Also of note}}, {GenerateMission()}]
- *{missionCount==4}[Finally, {GenerateMission()}]
- + You've {~got diarea|got the snorts|been hung over for days}, lets reschedule... 
- ->Entry
+{~First|Firstly|Most urgently|As you expected|Unexpectedly}, {GenerateMission()} #choice1
+
+{~Second|Secondly|Also|As well as}, {GenerateMission()} #choice2
+
+{missionCount>2:{missionCount == 3: Finally}{missionCount == 4:{~Third|Thirdly|Also of note}}, {GenerateMission()}} #choice3
+
+{missionCount==4:Finally, {GenerateMission()}}#choice4
+
+*Mission 1
+*Misison 2
+*{missionCount>2}Mission 3
+*{missionCount>3}Mission 4
+*Return -> Entry
+
  
 -Your mission selected, the mission unfurls, and new details begin to emerge...
 
@@ -33,6 +41,7 @@ When the time is right, your handler reaches out with news...
 
 === function GenerateMission() ===
 LIST types = mechs, infantry, commandos, scientists, specialists
+~types = LIST_ALL(types)
 
 VAR faction = factions.Frogtide
 ~faction = LIST_RANDOM(factions)
@@ -47,29 +56,29 @@ VAR type = types.mechs
 ~tags +=type
 
 
-{shuffle:
-    - rumours
-    - word from an informant 
-} of {faction} {type} {shuffle:
+<>{shuffle:
+    - rumours # rumors
+    - word from an informant #word
+} of {faction} {type} <>{shuffle:
     -in
     -around
-    -sending scouts into
+    -sending scouts into #scouts
     -beneath
     -marching on
     -defending attacks from {otherFaction} {InAround()}
     -attacking {otherFaction} {~facilities|depos|patrols} {InAround()}
-} {shuffle:
-    -the mines
-    -the root system
-    -no mans land
-    -the canopy
-    -the town outskirts
-    -the old trainyards
-    -our staging area
+} <> {shuffle:
+    -the mines #mines
+    -the root system #roots
+    -no mans land #no mans land
+    -the canopy #canopy
+    -the town outskirts # town
+    -the old trainyards # trainyards
+    -our staging area #staging
 }
 
 === function InAround() ===
-{shuffle:
+<>{shuffle:
 -in
 -around
 -beneath

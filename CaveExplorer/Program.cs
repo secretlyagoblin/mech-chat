@@ -16,7 +16,7 @@ namespace CaveExplorer
             }
             };
 
-            var story = System.IO.File.ReadAllText(@"../../../ink/selector.js");
+            var story = System.IO.File.ReadAllText(@"../../../ink/selector.ink.json");
 
             var game = new Storyland(story, context);
 
@@ -38,7 +38,7 @@ namespace CaveExplorer
 
                 //Console.WriteLine(game.Step());
 
-                if (game.ShowChoices(out var choices))
+                if (game.ShowChoices(out var choices, out var tags))
                 {
                     Console.WriteLine();
                     choices.ForEach(x => { 
@@ -55,6 +55,17 @@ namespace CaveExplorer
                         Console.WriteLine();
 
                     });
+
+                    Console.WriteLine();
+                    foreach (var tag in tags)
+                    {
+                        foreach (var c in tag)
+                        {
+                            Console.Write(c);
+                            Thread.Sleep(timestep);
+                        }
+                        Console.Write(", ");
+                    }
 
                     game.Choose(int.Parse(Console.ReadKey(true).KeyChar.ToString()));
                     Console.WriteLine();
