@@ -6,13 +6,6 @@ VAR missionCount = 3
 ~missionCount = RANDOM(2,4)
 VAR alwaysFalse = false
 
-{shuffle:
--{alwaysFalse:item}
--doyg
--nurthle
-}
-
-
 
 -> Entry
 
@@ -20,18 +13,18 @@ VAR alwaysFalse = false
 
 When the time is right, your handler reaches out with news...
 
-{~First|Firstly|Most urgently|As you expected|Unexpectedly}, {GenerateMission()} #choice1
+{~First|Firstly|Most urgently|As you expected|Unexpectedly}, {GenerateMission()} #IN_m1
 
-{~Second|Secondly|Also|As well as}, {GenerateMission()} #choice2
+{~Second|Secondly|Also|As well as}, {GenerateMission()} #IN_m2
 
-{missionCount>2:{missionCount == 3: Finally}{missionCount == 4:{~Third|Thirdly|Also of note}}, {GenerateMission()}} #choice3
+{missionCount>2:{missionCount == 3: Finally}{missionCount == 4:{~Third|Thirdly|Also of note}}, {GenerateMission()}} #IN_m3
 
-{missionCount==4:Finally, {GenerateMission()}}#choice4
+{missionCount==4:Finally, {GenerateMission()}} #IN_m4
 
-*Mission 1
-*Misison 2
-*{missionCount>2}Mission 3
-*{missionCount>3}Mission 4
+*OUT_m1 #OUT_m1
+*OUT_m2 #OUT_m2
+*{missionCount>2}OUT_m3 #OUT_m3
+*{missionCount>3}OUT_m4 #OUT_m4
 *Return -> Entry
 
  

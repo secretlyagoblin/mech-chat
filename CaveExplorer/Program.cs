@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CaveExplorer.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -8,79 +9,30 @@ namespace CaveExplorer
     {
         static void Main(string[] args)
         {
-            var context = new GameContext
-            {
-                Deets = new Dictionary<string, Dictionary<string, object>>()
-            {
-                {"Cave",new Dictionary<string, object>(){ { "Size", "Huge" } } }
-            }
-            };
+
 
             var story = System.IO.File.ReadAllText(@"../../../ink/selector.ink.json");
 
-            var game = new Storyland(story, context);
+            var game = new Storyland(story);
 
-            Console.WriteLine();
-
-            var timestep = 6;
+            //Overthinking this!
+            IStoryRenderable renderer = new Renderer();
 
             while (game.CanContinue)
             {
-                var str = game.Step();
+                var step = game.StepForward();
 
-                Step(4);
+                renderer.RenderStory(step);
 
-                foreach (var c in str)
+                if (game.ShowChoices(out var choices))
                 {
-                    Console.Write(c);
-                    Thread.Sleep(timestep);
-                }
-
-                //Console.WriteLine(game.Step());
-
-                if (game.ShowChoices(out var choices, out var tags))
-                {
-                    Console.WriteLine();
-                    choices.ForEach(x => { 
-                        var choice = $"{x.index}: {x.text.Replace("\n","")}";
-
-                        Step(4);
-
-                        foreach (var c in choice)
-                        {
-                            Console.Write(c);
-                            Thread.Sleep(timestep);
-                        }
-
-                        Console.WriteLine();
-
-                    });
-
-                    Console.WriteLine();
-                    foreach (var tag in tags)
-                    {
-                        foreach (var c in tag)
-                        {
-                            Console.Write(c);
-                            Thread.Sleep(timestep);
-                        }
-                        Console.Write(", ");
-                    }
-
-                    game.Choose(int.Parse(Console.ReadKey(true).KeyChar.ToString()));
-                    Console.WriteLine();
+                    renderer.RenderChoices(choices);
+                    game.Choose(renderer.WaitForChoice());
                 }
             }
 
 
         }
 
-        private static void Step(int count)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                Console.Write(' ');
-            }
-        }
     }
 }
