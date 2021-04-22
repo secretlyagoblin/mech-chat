@@ -84,22 +84,43 @@ VAR type = types.mechs
 }
 
 == CoreLoop
-VAR IsTwists = true
+LIST loopOptions = Obstacle, Twist, Complication, Boon
+~loopOptions = LIST_ALL(loopOptions)
 
-+ ...an obstacle?
-+ {IsTwists}...a shocking twist! -> Twists ->
-+ ...a complication?
-+ ...a boon!
-+ ...or finally, we reach our conclusion.. -> END
++ {loopOptions ? loopOptions.Obstacle}...an obstacle?
+-> Obstacles
++ {loopOptions ? loopOptions.Twist}...a shocking twist!
+-> Twists
++ {loopOptions ? loopOptions.Complication}...a complication?
+->Complications
++ {loopOptions ? loopOptions.Boon}...a boon!
+->Boons
++ ...or finally, we reach our conclusion..
+->Conclusions
 
 - ->CoreLoop
 
 == Twists
-{ shuffle stopping:
--COol factions
--Big nuts
--Hot wheat
- -
- ~IsTwists = false
- BIG FINAL TWIST
-}->->
+NAVIGATE_Twists_CoreLoop
+-> ThrowNavigate
+
+== Obstacles
+NAVIGATE_Obstacles_CoreLoop
+-> ThrowNavigate
+
+== Complications
+NAVIGATE_Complications_CoreLoop
+-> ThrowNavigate
+
+== Boons
+NAVIGATE_Boons_CoreLoop
+-> ThrowNavigate
+
+== Conclusions
+NAVIGATE_Conclusions_CoreLoop
+-> ThrowNavigate
+
+== ThrowNavigate
+
+This text should never display, NAVIGATE text should be managed at the CSharp layer. ->END
+
