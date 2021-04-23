@@ -7,6 +7,10 @@
 
   <ItemGroup>
     <PackageReference Include="Ink.Engine.Runtime-Unofficial" Version="1.0.0-nightly-21022223" />
+  </ItemGroup>  
+
+  <ItemGroup>
+    <ProjectReference Include="..\MechStory\MechStory.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
 </Project>

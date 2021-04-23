@@ -9,7 +9,11 @@ namespace CaveExplorer
     {
         static void Main(string[] args)
         {
+            //var data = M
+            //
+            //
 
+            var res = MechStory.Story.Tags.canopy;
 
             var story = System.IO.File.ReadAllText(@"../../../ink/selector.ink.json");
 
