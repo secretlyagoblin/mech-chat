@@ -1,0 +1,23 @@
+
+==AmbushedByFrogs
+#NOT_frog #twist
+#ONLY_swamp
+
+You are ambushed by frogs. The tags above specify the condition.
+The tags in this section are collected and handed back to the procedural deck and will be incorporated into new choices - the frogs are back baby. #frog
+
+-> CoreLoop
+
+
+==TwistInTheSwamp
+#ONLY_swamp
+#twist
+
+You find a sick mech in the swamp. {shuffle:
+-it hums into life
+-its sinking slowly but appears to be operational.
+-its doomed son
+}
+
+-> CoreLoop
+

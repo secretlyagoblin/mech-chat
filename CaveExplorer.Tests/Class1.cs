@@ -19,8 +19,17 @@ namespace CaveExplorer.Tests
         {
             var c = Corpi.CoprusA;
 
-            var regex = new Regex(@"(#)\w+");
-            var results = regex.Matches(c).Select(x=>x.Value[1..]).ToList();
+            var regex = new Regex(@"#[^#^\r^)]+", RegexOptions.Multiline);
+            var results = regex.Matches(c).Select(x => x.Value[1..]).ToList();
+        }
+
+        [Test]
+        public void StartLineFirst()
+        {
+            var c = Corpi.CoprusA;
+
+            var regex = new Regex(@"^=+");
+            var results = regex.Matches(c);//.Select(x => x.Value[1..]).ToList();
         }
 
         [Test]
@@ -28,7 +37,7 @@ namespace CaveExplorer.Tests
         {
             var c = Corpi.CoprusA;
 
-            var regex = new Regex(@"={2,}\s\w+\s=*\W");
+            var regex = new Regex(@"^={2,}( )*\w*\W*$", RegexOptions.Multiline);
             var variable = new Regex(@"\w+");
 
             var results = regex.Matches(c).Cast<Match>();
@@ -39,10 +48,10 @@ namespace CaveExplorer.Tests
 
             foreach (var item in results)
             {
-                if (item.Value.StartsWith("==="))
+                if (item.Value.StartsWith("\n==="))
                 {
                     if (!(string.IsNullOrEmpty(current.Key))) obj.Add(current);
-                    current = new KeyValuePair<string, List<string>>(variable.Match(item.Value).Value,new List<string>());
+                    current = new KeyValuePair<string, List<string>>(variable.Match(item.Value).Value, new List<string>());
                 }
                 else
                 {
@@ -52,6 +61,81 @@ namespace CaveExplorer.Tests
 
             obj.Add(current);
 
+
+
+        }
+
+        [Test]
+        public void TotalFind()
+        {
+            var c = Corpi.CoprusA;
+
+            var rogoc = new Regex(@"^={2,}[ ]*\w*\W*$|#[^#\n\r]*[\n\r]*", RegexOptions.Multiline);
+
+            var res = rogoc.Matches(c).Cast<Match>();
+
+            var currentIndex = res.ToList()[1].Index;
+
+            var topTags = new List<string>();
+
+            foreach (var match in res) 
+            {
+                if (currentIndex == match.Index )
+                {
+                    topTags.Add(match.Value);
+                    currentIndex = match.Index+match.Length;
+                }
+
+                
+            }
+        }
+
+        [Test]
+        public void Steppin()
+        {
+            var c = Corpi.CoprusA;
+
+            var lines = Regex.Split(c, "\r\n|\r|\n");
+
+            var totalChunks = new List<Chunk>();
+
+            Chunk chunk = null;
+
+            var categoryMatch = new Regex(@"^={2,}( )*\w*\W*$", RegexOptions.Multiline);
+            var tagMatch = new Regex(@"(#)\w+");
+
+            var ranOutofTags = true;
+
+            foreach (var line in lines)
+            {
+                var match = categoryMatch.Match(line);
+
+                if (match.Success)
+                {
+                    ranOutofTags = false;
+                    if (chunk is Chunk) totalChunks.Add(chunk);
+
+                    chunk = new Chunk() { Title = match.Value.Split(" ")[1] };
+
+                } else if(!ranOutofTags)
+                {
+                    var tags = tagMatch.Matches(line);
+                    ranOutofTags = tags.Count == 0;
+
+                    if (ranOutofTags) continue;
+
+                    chunk.Tags.AddRange(tags.Select(x => x.Value));
+                }
+            }
+
+            if (chunk is Chunk) totalChunks.Add(chunk);
+        }
+
+        public class Chunk{
+
+            public string Title { get; set; }
+
+            public List<string> Tags { get; } = new List<string>();
 
         }
     }

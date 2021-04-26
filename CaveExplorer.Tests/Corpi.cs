@@ -18,6 +18,11 @@ VAR alwaysFalse = false
 -> Entry
 
 === Entry ===
+#a b c #aab #accb eer #zoo
+#dfvff #dsvf #vdvf s
+#tteerr
+
+#fsdfds
 
 When the time is right, your handler reaches out with news...
 
@@ -109,6 +114,9 @@ LIST loopOptions = Obstacle, Twist, Complication, Boon
 - ->CoreLoop
 
 == Twists
+#GORT
+
+#YORT
 NAVIGATE_Twists_CoreLoop
 -> ThrowNavigate
 
@@ -117,6 +125,8 @@ NAVIGATE_Obstacles_CoreLoop
 -> ThrowNavigate
 
 == Complications
+#YUP
+#STRUP
 NAVIGATE_Complications_CoreLoop
 -> ThrowNavigate
 
@@ -125,6 +135,7 @@ NAVIGATE_Boons_CoreLoop
 -> ThrowNavigate
 
 == Conclusions
+#AAFFF
 NAVIGATE_Conclusions_CoreLoop
 -> ThrowNavigate
 

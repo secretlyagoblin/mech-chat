@@ -18,42 +18,15 @@ namespace MechStory.Generators
             // begin creating the source we'll inject into the users compilation
             var sourceBuilder = new StringBuilder(@"
 using System;
+using System.Collections.Generic;
 namespace MechStory.Story
 {
-    public static class Pages
-    {
-
-    }
 ");
 
-              
-
-            //sourceBuilder.Append(@"
-//Comment
-//");
-
-            // finish creating the source to inject
-            sourceBuilder.Append(@"
-        
-    
-
-    public enum Tags{
-");
-            var regex = new Regex(@"(#)\w+");
-            var results = regex.Matches(System.IO.File.ReadAllText(_inkFile.FullName))
-                .Cast<Match>()
-                .Select(x => x.Value.Substring(1))
-                .ToList();
-
-            foreach (var item in results)
-            {
-                sourceBuilder.Append($@"
-        {item},");
-            }
-
-            sourceBuilder.Append(@"
-    }
-}");
+            sourceBuilder.Append(BuildTagEnum(_tags));
+            sourceBuilder.Append(Chapter.ToClassDefinition());
+            sourceBuilder.Append(BuildChapterClass(_chapters));
+            sourceBuilder.Append("}");
 
             var str = sourceBuilder.ToString();
             Debug.Write(str);
@@ -65,29 +38,209 @@ namespace MechStory.Story
 
         }
 
-        public enum Zoot
-        {
-            
-        }
+        private List<string> _tags = new List<string>();
 
-        private Ink.Runtime.Story _story;
+        private List<Chapter> _chapters = new List<Chapter>();
 
-        private System.IO.FileInfo _inkFile;
+        public static List<KeyValuePair<string, string>> All = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>() };
+
 
         public void Initialize(GeneratorInitializationContext context)
         {
-            var path = System.IO.Path.GetFullPath(@"C:\Users\chris\source\repos\mech-gen\MechStory\generatorSource\selector.ink");
+            //if (!Debugger.IsAttached) Debugger.Launch();            
 
-            _inkFile = new System.IO.FileInfo(path);
+            var paths = System.IO.Directory.GetFiles(@"C:\Users\chris\source\repos\mech-gen\Ink").Where(x=>System.IO.Path.GetExtension(x) != ".json");
+            var getAllTags = new Regex(@"#[^#\n\r]*[\n\r]*", RegexOptions.Multiline);
+
+            var allTags = new List<string>();
+
+            foreach (var path in paths)
+            {
+                var text = System.IO.File.ReadAllText(path);
+                _tags.AddRange(getAllTags.Matches(text).Cast<Match>().Select(x => x.Value));
+                var chapters = CreateChapters(text);
+                _chapters.AddRange(chapters);
+            }
+
+            _tags = _tags.Distinct().ToList();
+
 
             //_story = new Ink.Runtime.Story(path);
 
             //if (!Debugger.IsAttached)
             //{
-               // Debugger.Launch();
-            //}
-            
+            // Debugger.Launch();
+            //}s
+
+        }
+
+        internal List<Chapter> CreateChapters(string file)
+        {
+            var getAllChaptersAndTags = new Regex(@"^={2,}[ ]*\w*\W*$|#[^#\n\r]*[\n\r]*|[^\s]+[^#=]*", RegexOptions.Multiline);
+            var getName = new Regex(@"\w+", RegexOptions.Multiline);
+            var allChaptersAndTags = getAllChaptersAndTags.Matches(file).Cast<Match>();
+
+            var chapters = new List<Chapter>();
+
+            var tagsFormHeaderTags = false;
+
+            foreach (var match in allChaptersAndTags)
+            {
+                if (match.Value.StartsWith("=="))
+                {
+                    tagsFormHeaderTags = true;
+                    var name = getName.Match(match.Value);
+                    chapters.Add(new Chapter(name.Value));
+                }else if (match.Value.StartsWith("#") && tagsFormHeaderTags)
+                {
+                    var tag = FormatTag(match.Value);
+                    var chapter = chapters.Last();
+
+                    switch (tag.Item2)
+                    {
+                        case TagType.Only: 
+                            chapter.Only.Add(tag.Item1);
+                            break;
+                        case TagType.Not:
+                            chapter.Not.Add(tag.Item1);
+                            break;
+                        case TagType.Any:
+                            chapter.Any.Add(tag.Item1);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    tagsFormHeaderTags = false;
+                }
+
+
+            }
+
+            return chapters;
+        }
+
+        private System.Globalization.TextInfo _titleCase = System.Globalization.CultureInfo.InvariantCulture.TextInfo;
+
+        internal string BuildTagEnum(List<string> tags)
+        {
+            var sb = new StringBuilder();
+
+            var strugs = tags
+                .Select(x => FormatTag(x).Item1)
+                .Select(x=>x.Trim())
+                .Distinct();
+
+            sb.AppendLine($@"public enum Tag {{");
+
+            sb.AppendLine(string.Join(",", strugs));
+            sb.AppendLine($@"}}");
+
+            return sb.ToString();
+        }
+
+        internal string BuildChapterClass(List<Chapter> chapters)
+        {
+            var sb = new StringBuilder();
+
+            sb.Append($@"public static class Chapters{{");
+            sb.Append($@"public static List<Chapter> All = new List<Chapter>(){{");
+            sb.Append(string.Join(",",chapters.Select(x => x.ToCode())));
+            sb.Append($@"}};");
+            sb.Append($@"}}");
+
+            return sb.ToString();
+        }
+
+        internal (string,TagType) FormatTag(string tag)
+        {
+            var lowerTag = tag.ToLowerInvariant();
+
+            if (lowerTag.StartsWith("#not_"))
+            {
+                var sub = lowerTag.Substring(5);
+                sub = _titleCase.ToTitleCase(sub);
+                sub = sub.Replace(" ", "");
+                return (sub, TagType.Not);
+            } else if (lowerTag.StartsWith("#only_"))
+            {
+                var sub = lowerTag.Substring(6);
+                sub = _titleCase.ToTitleCase(sub);
+                sub = sub.Replace(" ", "");
+                return (sub, TagType.Only);
+            }
+            else
+            {
+                var sub = lowerTag.Substring(1);
+                sub = _titleCase.ToTitleCase(sub);
+                sub = sub.Replace(" ", "");
+                return (sub, TagType.Any);
+            }            
         }
     }
+
+    internal enum TagType
+    {
+        Only,Not,Any
+    }
+
+    public class Chapter
+    {
+        public List<string> Only { get; } = new List<string>();
+        public List<string> Not { get; } = new List<string>();
+        public List<string> Any { get; } = new List<string>();
+        public string Title { get; }
+        public Chapter(string title)
+        {
+            Title = title;
+        }
+
+        public static string ToClassDefinition()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine(@"
+public class Chapter
+{
+        public List<Tag> Only { get; set; } = new List<Tag>();
+        public List<Tag> Not { get; set; } = new List<Tag>();
+        public List<Tag> Any { get; set; } = new List<Tag>();
+        public string Title { get; set; }
+        public Chapter(string title)
+        {
+            Title = title;
+        }
+}
+");
+
+            return sb.ToString();
+        }
+
+        public string ToCode()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine($@"new Chapter(""{Title}""){{");
+
+            sb.AppendLine($@"Only = new List<Tag>(){{");
+            sb.AppendLine(string.Join(",", Only.Select(x => "Tag."+x)));
+            sb.AppendLine($@"}},");
+
+            sb.AppendLine($@"Not = new List<Tag>(){{");
+            sb.AppendLine(string.Join(",", Not.Select(x => "Tag." + x)));
+            sb.AppendLine($@"}},");
+
+            sb.AppendLine($@"Any = new List<Tag>(){{");
+            sb.AppendLine(string.Join(",", Any.Select(x => "Tag." + x)));
+            sb.AppendLine($@"}}");
+
+            sb.AppendLine($@"}}");
+
+            return sb.ToString();
+        }
+    }
+
 }
 
