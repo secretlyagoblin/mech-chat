@@ -1,6 +1,8 @@
 
+
+
 ==AmbushedByFrogs
-#NOT_frog #twist
+#NOT_frog #complication
 #ONLY_swamp
 
 You are ambushed by frogs. The tags above specify the condition.
@@ -11,7 +13,7 @@ The tags in this section are collected and handed back to the procedural deck an
 
 ==TwistInTheSwamp
 #ONLY_swamp
-#twist
+#twist #deep #mouse
 
 You find a sick mech in the swamp. {shuffle:
 -it hums into life
@@ -21,3 +23,16 @@ You find a sick mech in the swamp. {shuffle:
 
 -> CoreLoop
 
+==Snorp
+#twist
+
+Good done go snorp it #swamp
+
+-> CoreLoop
+
+==IveNeverEvenBeenToVenice
+#twist
+
+I've never been to Venice, my name is basically Trebbib. #deep
+
+-> CoreLoop

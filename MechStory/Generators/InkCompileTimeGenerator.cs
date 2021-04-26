@@ -63,36 +63,31 @@ namespace MechStory.Story
             }
 
             _tags = _tags.Distinct().ToList();
-
-
-            //_story = new Ink.Runtime.Story(path);
-
-            //if (!Debugger.IsAttached)
-            //{
-            // Debugger.Launch();
-            //}s
-
         }
 
         internal List<Chapter> CreateChapters(string file)
         {
-            var getAllChaptersAndTags = new Regex(@"^={2,}[ ]*\w*\W*$|#[^#\n\r]*[\n\r]*|[^\s]+[^#=]*", RegexOptions.Multiline);
+            var getAllChaptersAndTags = new Regex(@"^={2,}[ ]*\w*\W*$|#[^#\n\r]*[\n\r]*", RegexOptions.Multiline);
             var getName = new Regex(@"\w+", RegexOptions.Multiline);
             var allChaptersAndTags = getAllChaptersAndTags.Matches(file).Cast<Match>();
 
+            var currentIndex = 0;
+
             var chapters = new List<Chapter>();
 
-            var tagsFormHeaderTags = false;
 
             foreach (var match in allChaptersAndTags)
             {
                 if (match.Value.StartsWith("=="))
                 {
-                    tagsFormHeaderTags = true;
+                    currentIndex = match.Index + match.Length;
+
                     var name = getName.Match(match.Value);
                     chapters.Add(new Chapter(name.Value));
-                }else if (match.Value.StartsWith("#") && tagsFormHeaderTags)
+                }else if (match.Value.StartsWith("#") && Math.Abs(currentIndex-match.Index) < 6 ) //magic number
                 {
+                    currentIndex = match.Index + match.Length;
+
                     var tag = FormatTag(match.Value);
                     var chapter = chapters.Last();
 
@@ -113,7 +108,7 @@ namespace MechStory.Story
                 }
                 else
                 {
-                    tagsFormHeaderTags = false;
+                  
                 }
 
 

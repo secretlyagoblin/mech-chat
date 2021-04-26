@@ -2,17 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Linq;
+using MechStory.Story;
 
 namespace CaveExplorer
 {
     class Program
     {
-        static void Main(string[] args)
-        {
-            //var data = M
-            //
 
-            foreach (MechStory.Story.Chapter chap in MechStory.Story.Chapters.All)
+        static void DebugChapters(List<Chapter> chapters)
+        {
+            foreach (Chapter chap in chapters)
             {
                 Console.WriteLine(chap.Title);
 
@@ -34,23 +34,37 @@ namespace CaveExplorer
                     chap.Not.ForEach(x => Console.Write($"[{x}] "));
                     props++;
                 }
-                    if (chap.Any.Count > 0)
-                    {
-                        Console.WriteLine();
-                        Console.Write("Any of: ");
-                        chap.Any.ForEach(x => Console.Write($"[{x}] "));
+                if (chap.Any.Count > 0)
+                {
+                    Console.WriteLine();
+                    Console.Write("Any of: ");
+                    chap.Any.ForEach(x => Console.Write($"[{x}] "));
                     props++;
-                    }
+                }
 
-                if(props>0)Console.WriteLine();
+                if (props > 0) Console.WriteLine();
                 Console.ForegroundColor = ConsoleColor.White;
             }
 
             Console.ReadLine();
+        }
 
-            var story = System.IO.File.ReadAllText(@"../../../ink/selector.ink.json");
+        static void Main(string[] args)
+        {
+
+            //var subset = Chapters.All.FulfillingTagset(Tag.Swamp, Tag.Twist, Tag.Frog);
+
+            //DebugChapters(subset);
+
+
+
+
+
+            var story = System.IO.File.ReadAllText(@"../../../../ink/selector.ink.json");
 
             var game = new Storyland(story);
+            game.SpecialTags.Add(Tag.Twist);
+            game.SpecialTags.Add(Tag.Complication);
 
             //Overthinking this!
             IStoryRenderable renderer = new Renderer();

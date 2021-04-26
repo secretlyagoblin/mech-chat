@@ -56,7 +56,7 @@ namespace CaveExplorer
                 {
                     Indent(4);
                     Console.Write('[');
-                    foreach (var c in tag)
+                    foreach (var c in Enum.GetName(typeof(MechStory.Story.Tag),tag))
                     {
                         Console.Write(c);
                         Thread.Sleep(Timestep);

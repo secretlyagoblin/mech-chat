@@ -101,23 +101,23 @@ LIST loopOptions = Obstacle, Twist, Complication, Boon
 - ->CoreLoop
 
 == Twists
-NAVIGATE_Twists_CoreLoop
+NAVIGATE_Twist
 -> ThrowNavigate
 
 == Obstacles
-NAVIGATE_Obstacles_CoreLoop
+NAVIGATE_Obstacle
 -> ThrowNavigate
 
 == Complications
-NAVIGATE_Complications_CoreLoop
+NAVIGATE_Complication
 -> ThrowNavigate
 
 == Boons
-NAVIGATE_Boons_CoreLoop
+NAVIGATE_Boon
 -> ThrowNavigate
 
 == Conclusions
-NAVIGATE_Conclusions_CoreLoop
+NAVIGATE_Conclusion
 -> ThrowNavigate
 
 == ThrowNavigate

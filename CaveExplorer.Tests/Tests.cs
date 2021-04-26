@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace CaveExplorer.Tests
 {
-    public class Class1
+    public class Tests
     {
         [Test]
         public void Testing()
@@ -88,6 +88,18 @@ namespace CaveExplorer.Tests
 
                 
             }
+        }
+
+        [Test]
+        public void Split()
+        {
+            var c = Corpi.CoprusA;
+
+            var splits = new Regex(@"^={2,}[ ]*\w*\W*$|#[^#\n\r]*[\n\r]*");
+
+            var results = splits.Split(c);
+
+
         }
 
         [Test]
